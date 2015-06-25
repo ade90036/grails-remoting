@@ -14,11 +14,14 @@ grails.project.dependency.resolution = {
 	}
 
 	dependencies {
-		runtime 'com.caucho:hessian:4.0.7'
+		runtime 'com.caucho:hessian:4.0.38'
+		runtime 'org.springframework:spring-aop:4.0.9.RELEASE'
+		runtime 'org.springframework:spring-expression:4.0.9.RELEASE'
+
 	}
 
 	plugins {
-		build(':release:2.0.4', ':rest-client-builder:1.0.2') {
+		build(':rest-client-builder:2.1.1') {
 			export = false
 		}
 	}
