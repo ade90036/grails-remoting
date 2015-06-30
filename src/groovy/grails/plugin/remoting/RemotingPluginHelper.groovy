@@ -19,19 +19,17 @@ import org.aopalliance.intercept.MethodInterceptor
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.commons.GrailsServiceClass
-import org.codehaus.groovy.grails.plugins.remoting.InterceptorArtefactHandler
 import org.codehaus.groovy.grails.plugins.remoting.InterceptorWrapper
 import org.codehaus.groovy.grails.plugins.remoting.RemotingUrlHandlerMapping
 import org.codehaus.groovy.grails.plugins.remoting.InterceptorArtefactHandler.InterceptorGrailsClass
+import org.codehaus.groovy.grails.plugins.remoting.httpinvoker.SecureHttpInvokerProxyFactoryBean
+import org.codehaus.groovy.grails.plugins.remoting.security.TestSecurityProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.aop.framework.ProxyFactoryBean
 import org.springframework.aop.target.HotSwappableTargetSource
-import org.springframework.remoting.caucho.BurlapProxyFactoryBean
-import org.springframework.remoting.caucho.BurlapServiceExporter
 import org.springframework.remoting.caucho.HessianProxyFactoryBean
 import org.springframework.remoting.caucho.HessianServiceExporter
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter
 import org.springframework.remoting.rmi.RmiProxyFactoryBean
 import org.springframework.remoting.rmi.RmiServiceExporter
@@ -39,23 +37,32 @@ import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
 class RemotingPluginHelper {
 
+
+
+
+
 	static final Map remoteExporters = [
-		rmi:         RmiServiceExporter,
+//rmi disabled as it is old and not maintained.
+//		rmi:         RmiServiceExporter,
 		hessian:     HessianServiceExporter,
-		burlap:      BurlapServiceExporter,
+//burlap is deprecated.
+//		burlap:      BurlapServiceExporter,
 		httpinvoker: HttpInvokerServiceExporter]
 
 	static final Map proxyFactories = [
-		rmi:         RmiProxyFactoryBean,
+//rmi disabled as it is old and not maintained.
+//		rmi:         RmiProxyFactoryBean,
 		hessian:     HessianProxyFactoryBean,
-		burlap:      BurlapProxyFactoryBean,
-		httpinvoker: HttpInvokerProxyFactoryBean]
+//		burlap:      BurlapProxyFactoryBean,
+//burlap is deprecated.
+		httpinvoker: SecureHttpInvokerProxyFactoryBean]
 
 	private final Logger log = LoggerFactory.getLogger(getClass())
 
 	def registerBeans = { GrailsApplication application ->
 		configureInterceptor.delegate = delegate
-		configureNewService.delegate = delegate
+		configureClientService.delegate = delegate
+		configureRemoteService.delegate = delegate
 		configureProxy.delegate = delegate
 		exposeProtocol.delegate = delegate
 		registerInterceptorGrailsClasses.delegate = delegate
@@ -111,7 +118,14 @@ class RemotingPluginHelper {
 
 		// Iterate through each of the declared services and configure them for remoting
 		for (serviceWrapper in application.serviceClasses) {
-			configureNewService serviceWrapper, interceptorMap
+			def serviceClass = serviceWrapper.clazz
+			if (GrailsClassUtils.isStaticProperty(serviceClass, 'remote'))
+			{
+				configureClientService serviceWrapper, interceptorMap
+			}
+			else if (GrailsClassUtils.isStaticProperty(serviceClass, 'expose')) {
+				configureRemoteService serviceWrapper, interceptorMap
+			}
 		}
 
 		// Required for the HTTP based remoting protocols.
@@ -123,7 +137,10 @@ class RemotingPluginHelper {
 		}
 	}
 
-	private configureNewService = { GrailsServiceClass serviceWrapper, Map interceptorMap ->
+	/**
+	 * This is the method which is used to configure the cliet
+	 */
+	private configureClientService = { GrailsServiceClass serviceWrapper, Map interceptorMap ->
 		Class serviceClass = serviceWrapper.clazz
 		String exposedName = serviceWrapper.shortName
 
@@ -134,6 +151,15 @@ class RemotingPluginHelper {
 			configureClientProxy log, delegate, remoteDef, serviceWrapper.propertyName, exposedName
 			return
 		}
+	}
+
+	/**
+	 * This is the method which is used to configure the cliet
+	 */
+	private configureRemoteService = { GrailsServiceClass serviceWrapper, Map interceptorMap ->
+
+		Class serviceClass = serviceWrapper.clazz
+		String exposedName = serviceWrapper.shortName
 
 		// OK, the service isn't configured as a proxy to a remote service, so check whether it
 		// should be exposed as a remote exporter by looking for a static 'expose' property.
@@ -160,6 +186,7 @@ class RemotingPluginHelper {
 			exposeProtocol type, exposedName, exposedInterface
 		}
 	}
+
 
 	/**
 	 * Configures a proxy bean for the given service class that allows
@@ -275,6 +302,7 @@ class RemotingPluginHelper {
 			bean.autowire = 'byName'
 			bb.serviceUrl = config.url.toString()
 			bb.serviceInterface = config.iface
+			bb.securityProvider = new TestSecurityProvider()
 		}
 
 		log.debug "Created proxy client for interface $config.iface.name with URL $config.url for service"
