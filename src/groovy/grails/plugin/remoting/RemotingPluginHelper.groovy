@@ -264,9 +264,8 @@ class RemotingPluginHelper {
 			return
 		}
 
-
-		if (!config.securityProvider && config.securityProvider instanceof SecurityProvider ) {
-			log.error "Cannot access service '$exposedName' via remoting: service does not specify an securityProvider."
+		if (config.securityProvider && config.securityProvider instanceof SecurityProvider ) {
+			log.error "Cannot access service '$exposedName' via remoting: service does not specify a correct securityProvider."
 			return
 		}
 
@@ -313,7 +312,11 @@ class RemotingPluginHelper {
 			bean.autowire = 'byName'
 			bb.serviceUrl = config.url.toString()
 			bb.serviceInterface = config.iface
-			bb.securityProvider = config.securityProvider.newInstance()
+			if (config.securityProvider)
+			{
+				bb.securityProvider = config.securityProvider.newInstance()
+			}
+
 		}
 
 		log.debug "Created proxy client for interface $config.iface.name with URL $config.url for service"
