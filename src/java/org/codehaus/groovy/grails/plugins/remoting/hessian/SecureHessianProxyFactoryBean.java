@@ -4,14 +4,13 @@ import com.caucho.hessian.client.*;
 import org.codehaus.groovy.grails.plugins.remoting.security.SecurityProvider;
 import org.springframework.remoting.caucho.HessianProxyFactoryBean;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by andrearizzini on 30/06/15.
+ * This is the extended class which implements the SecureHessianProxyFactory
+ * The hole purpose of this class is to pass to the SecuyreHessianProxyFactory a SecurityProvicer whic is used to extract user information from the session.
+ * This implements the hessian protocol.
+ * @author Andrea Rizzini
  */
 public class SecureHessianProxyFactoryBean extends HessianProxyFactoryBean {
 

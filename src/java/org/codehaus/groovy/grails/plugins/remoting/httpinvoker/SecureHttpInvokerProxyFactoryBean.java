@@ -14,6 +14,11 @@ import java.util.Locale;
 
 /**
  * Created by andrearizzini on 29/06/15.
+ * This class extends the HttpInvokerProxyFactoryBean to use the SecurityProvider
+ * This is passed in thee SecureHttpInvokerRequestExcecutor which then sets the Authorization header with the token provided
+ * by the SecurityProvider.
+ * @author Andrea Rizzini
+ *
  */
 public class SecureHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean {
 
@@ -46,6 +51,10 @@ public class SecureHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
         }
     }
 
+    /**
+     * This is the inline class which extends the simple http invoker.
+     * Is enables the invoker to taka a SecurityProvider which is used the extract the authorization token from the session.
+     */
 
     public class SecureHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
 
@@ -80,8 +89,8 @@ public class SecureHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
             //arizzini: this is the overloading method which we enable the JWT - json web token to validate the user.
             if (securityProvider != null)
             {
-                logger.debug("authenticationHeader: "+securityProvider.getAuthorisation());
-                connection.setRequestProperty(HTTP_HEADER_AUTHORIZATION, securityProvider.getAuthorisation());
+                logger.debug("authenticationHeader: "+securityProvider.getAuthorisationToken());
+                connection.setRequestProperty(HTTP_HEADER_AUTHORIZATION, securityProvider.getAuthorisationToken());
             }
 
             connection.setRequestProperty(HTTP_HEADER_CONTENT_TYPE, getContentType());

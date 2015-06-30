@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="hibernate" name="Hibernate">
+      <configuration>
+        <datasource-map />
+        <naming-strategy-map />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/target/plugins/rest-client-builder-2.1.1" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.4.5" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library name="Grails User Library (grails-remoting-grailsPlugins)">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-expression/jars/spring-expression-4.1.6.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-core/jars/spring-core-4.1.6.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-beans/jars/spring-beans-4.1.6.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-aop/jars/spring-aop-4.1.6.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.caucho/hessian/jars/hessian-4.0.38.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/junit/junit-dep/jars/junit-dep-4.10.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/cglib/cglib-nodep/jars/cglib-nodep-2.2.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-rest-client/jars/grails-datastore-rest-client-3.1.4.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>

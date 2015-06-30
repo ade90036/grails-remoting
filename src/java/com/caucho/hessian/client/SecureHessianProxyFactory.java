@@ -10,6 +10,10 @@ import java.util.logging.Logger;
 
 /**
  * Created by andrearizzini on 30/06/15.
+ * This is hessien specific class which needs to be creaded in this package, otherwise some
+ * dependecies will not be found.
+ * It uses the SecurityProvider to set the authorization token in the header
+ * @author Andrea Rizzini
  */
 public class SecureHessianProxyFactory extends HessianProxyFactory {
 
@@ -76,8 +80,8 @@ public class SecureHessianProxyFactory extends HessianProxyFactory {
 
             if (securityProvider != null)
             {
-                log.finer("authenticationHeader: "+securityProvider.getAuthorisation());
-                conn.setRequestProperty(HTTP_HEADER_AUTHORIZATION, securityProvider.getAuthorisation());
+                log.finer("authenticationHeader: "+securityProvider.getAuthorisationToken());
+                conn.setRequestProperty(HTTP_HEADER_AUTHORIZATION, securityProvider.getAuthorisationToken());
             }
 
             conn.setDoOutput(true);

@@ -23,6 +23,7 @@ import org.codehaus.groovy.grails.plugins.remoting.InterceptorWrapper
 import org.codehaus.groovy.grails.plugins.remoting.RemotingUrlHandlerMapping
 import org.codehaus.groovy.grails.plugins.remoting.InterceptorArtefactHandler.InterceptorGrailsClass
 import org.codehaus.groovy.grails.plugins.remoting.httpinvoker.SecureHttpInvokerProxyFactoryBean
+import org.codehaus.groovy.grails.plugins.remoting.security.SecurityProvider
 import org.codehaus.groovy.grails.plugins.remoting.security.TestSecurityProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,6 +36,10 @@ import org.springframework.remoting.rmi.RmiProxyFactoryBean
 import org.springframework.remoting.rmi.RmiServiceExporter
 import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
+/**
+ * This is the main class whic inject service in the spring configuration dynamically and it also configures the proxy and the beans.
+ * @author Andrea Rizzini
+ */
 class RemotingPluginHelper {
 
 
@@ -259,6 +264,12 @@ class RemotingPluginHelper {
 			return
 		}
 
+
+		if (!config.securityProvider && config.securityProvider instanceof SecurityProvider ) {
+			log.error "Cannot access service '$exposedName' via remoting: service does not specify an securityProvider."
+			return
+		}
+
 		if (!config.iface) {
 			log.error "Cannot access service '$exposedName' via remoting: service does not specify an interface."
 			return
@@ -302,7 +313,7 @@ class RemotingPluginHelper {
 			bean.autowire = 'byName'
 			bb.serviceUrl = config.url.toString()
 			bb.serviceInterface = config.iface
-			bb.securityProvider = new TestSecurityProvider()
+			bb.securityProvider = config.securityProvider.newInstance()
 		}
 
 		log.debug "Created proxy client for interface $config.iface.name with URL $config.url for service"
